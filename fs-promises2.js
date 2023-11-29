@@ -49,4 +49,4 @@ function fsPromises2(path, randomFiles) {
     })
     .catch((err) => console.log(err));
 }
-fsPromises2("/home/wasim/Assignment/callback-assignment", 3);
+fsPromises2("/home/wasim/Assignment/callback-assignment");
