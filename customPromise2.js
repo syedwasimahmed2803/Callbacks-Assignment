@@ -5,7 +5,7 @@ function readFile(fileName) {
   return new Promise((resolve, reject) => {
     fs.readFile(`${dir}${fileName}`, "utf-8", (err, data) => {
       if (err) {
-        console.error(err);
+        reject(err);
       } else {
         resolve(data);
       }
@@ -17,7 +17,7 @@ function writeFile(fileName, data) {
   return new Promise((resolve, reject) => {
     fs.writeFile(`${dir}${fileName}`, data, (err, data) => {
       if (err) {
-        console.error(err);
+        reject(err);
       } else {
         resolve("Write");
       }
@@ -29,7 +29,7 @@ function appendFile(fileName, data) {
   return new Promise((resolve, reject) => {
     fs.appendFile(`${dir}${fileName}`, data, (err, data) => {
       if (err) {
-        console.error(err);
+        reject(err);
       } else {
         resolve("Append");
       }
@@ -40,7 +40,7 @@ function unlink(fileName) {
   return new Promise((resolve, reject) => {
     fs.unlink(`${dir}${fileName}`, (err, data) => {
       if (err) {
-        console.error(err);
+        reject(err);
       } else {
         resolve("Delete");
       }

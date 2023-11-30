@@ -1,6 +1,6 @@
 const fs = require("fs/promises");
 
-function fsPromises2(path, randomFiles) {
+function fsPromises2(path) {
   fs.readFile(path + "/lipsum.txt", "utf-8")
     .then((data) => {
       return fs.writeFile(path + "/upperCase.txt", data.toUpperCase());
