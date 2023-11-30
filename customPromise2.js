@@ -71,10 +71,8 @@ function customPromise2() {
     .then(() => appendFile("fileName.txt", "sorted.txt\n"))
     .then(() => readFile("fileName.txt"))
     .then((data) => {
-      let filesToDelete = data.split("\n").filter(Boolean);
-      filesToDelete.forEach((file) => {
-        unlink(file);
-      });
+      const arrayOfFiles = data.split("\n").filter(Boolean);
+      return Promise.all(arrayOfFiles.map((fileName) => unlink(fileName)));
     })
     .catch((err) => console.log(err));
 }

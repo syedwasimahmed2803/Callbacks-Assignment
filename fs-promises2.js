@@ -43,9 +43,7 @@ function fsPromises2(path) {
     })
     .then((data) => {
       const arrayOfFiles = data.trim().split("\n");
-      return arrayOfFiles.forEach((file) => {
-        fs.unlink(file);
-      });
+      return Promise.all(arrayOfFiles.map((fileName) => fs.unlink(fileName)));
     })
     .catch((err) => console.log(err));
 }
