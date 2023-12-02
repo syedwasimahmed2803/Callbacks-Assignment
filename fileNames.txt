@@ -1,3 +1,0 @@
-upperCase.txt
-sentences.txt
-sorted.txt
