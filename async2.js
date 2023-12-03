@@ -1,74 +1,69 @@
 const fs = require("fs").promises;
-const dir = "/home/wasim/Assignment/callback-assignment/";
+const path = require("path");
 
-async function readFile(fileName) {
+async function readFile(filePath) {
   try {
-    const data = await fs.readFile(`${dir}${fileName}`, "utf-8");
-    return data;
-  } catch (err) {
-    throw err;
+    return await fs.readFile(filePath, "utf-8");
+  } catch (error) {
+    console.error("Error reading file");
+    throw error;
   }
 }
-
-async function writeFile(fileName, data) {
+async function writeFile(filePath, data) {
   try {
-    await fs.writeFile(`${dir}${fileName}`, data);
-    console.log("writeFile");
-  } catch (err) {
-    throw err;
+    return await fs.writeFile(filePath, data);
+  } catch (error) {
+    console.error("Error writing file");
+    throw error;
   }
 }
-
-async function appendFile(fileName, data) {
+async function appendFile(filePath, data) {
   try {
-    await fs.appendFile(`${dir}${fileName}`, data);
-    console.log("appendFile");
-  } catch (err) {
-    throw err;
+    return await fs.appendFile(filePath, data);
+  } catch (error) {
+    console.error("Error appending file");
+    throw error;
   }
 }
-
-async function unlink(fileName) {
+async function unlink(filePath) {
   try {
-    await fs.unlink(`${dir}${fileName}`);
-    console.log("unlink");
-  } catch (err) {
-    throw err;
+    return await fs.unlink(filePath);
+  } catch (error) {
+    console.error("Error deleting file");
+    throw error;
   }
 }
-
-async function async2() {
+async function problem2() {
   try {
-    const upperCaseData = await readFile("lipsum.txt");
-    await writeFile("upperCase.txt", upperCaseData.toUpperCase());
-
-    await writeFile("fileName.txt", "upperCase.txt\n");
-
-    const sentencesData = await readFile("upperCase.txt");
-    const sentences = sentencesData.toLowerCase().split(/[.!?]/).join("\n");
-    await writeFile("sentences.txt", sentences);
-
-    await appendFile("fileName.txt", "sentences.txt\n");
-
-    const fileNameData = await readFile("fileName.txt");
-    const arrayOfFiles = fileNameData.trim().split("\n");
-
-    const fileContents = await Promise.all(
-      arrayOfFiles.map((fileName) => readFile("/" + fileName, "utf-8"))
+    const readLipsum = await readFile("lipsum.txt");
+    const upperCaseContent = readLipsum.toUpperCase();
+    await writeFile("upperCase.txt", upperCaseContent);
+    await appendFile("fileNames.txt", "upperCase.txt\n");
+    await writeFile(
+      "sentences.txt",
+      upperCaseContent.toLowerCase().split(/[.!?]/).join("\n")
     );
-
-    const sortedContents = fileContents.sort().join("\n");
-    await writeFile("sorted.txt", sortedContents);
-
-    await appendFile("fileName.txt", "sorted.txt\n");
-
-    const finalFileNameData = await readFile("fileName.txt");
-    const finalArrayOfFiles = finalFileNameData.split("\n").filter(Boolean);
-
-    await Promise.all(finalArrayOfFiles.map((fileName) => unlink(fileName)));
-  } catch (err) {
-    console.log(err);
+    await appendFile("fileNames.txt", "sentences.txt\n");
+    const fileNames = ["upperCase.txt", "sentences.txt"];
+    const sortedData = await Promise.all(
+      fileNames.map(async (file) => {
+        const content = await readFile(file);
+        return content.split("\n").sort().join("\n");
+      })
+    );
+    await writeFile("sorted.txt", sortedData);
+    await appendFile("fileNames.txt", "sorted.txt");
+    const deleteNames = (await readFile("fileNames.txt"))
+      .split("\n")
+      .filter(Boolean);
+    await Promise.all(
+      deleteNames.map(async (file) => {
+        await unlink(file);
+      })
+    );
+  } catch (error) {
+    console.error("Error in file operations:", error);
+    throw error;
   }
 }
-
-async2();
+problem2();

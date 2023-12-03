@@ -1,68 +1,38 @@
 const fs = require("fs").promises;
+const path = require("path");
 
-async function createFiles(path, count) {
+async function createFiles(directory, files) {
   try {
-    await fs.mkdir(path);
-
-    const promises = Array.from({ length: count }, (_, i) => {
-      const filePath = `${path}/file${i + 1}.json`;
-      const content = JSON.stringify({ data: 0 });
-      return writeFile(filePath, content);
+    await fs.mkdir(directory, { recursive: true });
+    const promise = Array.from({ length: files }, (_, i) => {
+      const filename = `file${i + 1}.json`;
+      const filePath = path.join(directory, filename);
+      const data = "";
+      return fs.writeFile(filePath, data);
     });
-
-    await Promise.all(promises);
-    return `Directory '${path}' created with ${count} JSON files`;
+    await Promise.all(promise);
+    console.log(`Created Files`);
   } catch (error) {
-    handleError(error);
+    console.log("Error creating files", error);
   }
 }
-
-async function writeFile(filePath, content) {
+async function deleteFiles(directory) {
   try {
-    await fs.writeFile(filePath, content);
-    console.log(`${filePath} created`);
-  } catch (error) {
-    handleError(error);
-  }
-}
-
-async function deleteFiles(path) {
-  try {
-    const files = await fs.readdir(path);
-    const deletePromises = files.map((file) => unlink(`${path}/${file}`));
-
+    const filename = await fs.readdir(directory);
+    const deletePromises = filename.map((file) => {
+      const filePath = path.join(directory, file);
+      return fs.unlink(filePath);
+    });
     await Promise.all(deletePromises);
-    return `Deleted ${files.length} files from '${path}'.`;
+    console.log("Files Deleted");
   } catch (error) {
-    handleError(error);
+    console.error("Error deleting files", error);
   }
 }
+const directory = "Files";
+const files = 5;
 
-async function unlink(filePath) {
-  try {
-    await fs.unlink(filePath);
-    console.log(`${filePath} deleted`);
-  } catch (error) {
-    handleError(error);
-  }
-}
-
-function handleError(error) {
-  console.error("Error:", error);
-}
-
-async function main() {
-  const path = "Files";
-
-  try {
-    const createResult = await createFiles(path, 5);
-    console.log(createResult);
-
-    const deleteResult = await deleteFiles(path);
-    console.log(deleteResult);
-  } catch (error) {
-    handleError(error);
-  }
-}
-
-main();
+(async () => {
+  await createFiles(directory, files);
+  await deleteFiles(directory);
+})();
